@@ -1,8 +1,8 @@
 # GameCatalog
 ## Local Development
-Create a virtual environment.
+1. Create a virtual environment.
 `python -m venv <name>`
-Activate the virtual environment.
+2. Activate the virtual environment.
 `.<Name>\Scripts\activate`
-Intall dependencies.
+3. Intall dependencies.
 `pip install -r requirements.txt`
