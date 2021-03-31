@@ -13,8 +13,8 @@ def interpret(cmd):
 
 def main():
     print("Welcome to the GameCataloger!")
-    print("If you would like to start a new catalog enter the command: New") #Fill in <Command>
-    print("If you would like to use an existing catalog enter the command: Load") #Fill in <Command>
+    print("If you would like to start a new catalog enter the command: New")
+    print("If you would like to use an existing catalog enter the command: Load")
     #create Title Table
     #create Played Table
     #create completed Table
