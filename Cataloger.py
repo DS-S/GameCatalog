@@ -5,10 +5,18 @@ Author: Dennis Santos-Sanchez
 import sqlalchemy as al
 import sqlite3 as lt
 
+def new_catalog():
+    return
+
+def load_catalog():
+    return
+
 def interpret(cmd):
     while cmd != "":
         if cmd =="New":
+            new_catalog()
         if cmd =="Load":
+            load_catalog()
     return
 
 def main():
