@@ -18,7 +18,7 @@ def new_catalog():
 
     # Checks path exists.
     if not os.path.exists(path):
-        print("Path does not exist, please enter existing path.")  # Must be better way than to return
+        print("Path does not exist, please enter existing path.")  # Must be better way than to return, how ask again?
         return None
 
     # Get file name
@@ -29,7 +29,7 @@ def new_catalog():
     # Checks file doesn't already exists
     if not os.path.isfile(filepath):
         print(
-            "File does already exits in directory, please enter non-existing filename.")  # Must be better way than to return
+            "File does already exits in directory, please enter non-existing filename.")  # Must be better way than to return, how ask again?
         return None
 
     #### Building Tables ####
