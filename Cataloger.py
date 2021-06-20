@@ -10,7 +10,9 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignK
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-
+"""
+Creates and connects to new database
+"""
 def new_catalog():
     # Get path
     path = input("Please enter the path to the directory where you would like the catalog to be stored\n"
@@ -87,7 +89,9 @@ def new_catalog():
 
     return
 
-
+"""
+Connects to existing database
+"""
 def load_catalog():
     path = input("Please enter the path to the directory where the catalog is stored:")
     if not os.path.exists(path):
@@ -99,7 +103,13 @@ def load_catalog():
         print("File does not exits in directory, please enter existing file or use the command to create a new file.")  # Must be better way than to return
         return None
 
-def initial_menu(cmd):
+### MENU SYSTEM ###
+
+def initial_menu():
+    print("To start a new log enter the command: New")
+    print("To use an existing catalog enter the command: Load")
+    print("To quit the program enter the command: Quit\n")
+    cmd = input("Enter Command:")
     while cmd != "Quit":
         if cmd == "New":
             new_catalog()
@@ -108,19 +118,19 @@ def initial_menu(cmd):
             load_catalog()
             return
         else:
-            print("To start a new log enter the command: New")
+            print("\nTo start a new log enter the command: New")
             print("To use an existing catalog enter the command: Load")
             print("To quit the program enter the command: Quit\n")
             cmd = input("Enter Command:")
 
+def sub_menu():
+    return
+
+
 def main():
     print("SQLAlchemy: " + sqlalchemy.__version__ + "\nSQLite3: " + sqlite3.version)
-    print("Welcome to the GameTracker!")
-    print("To start a new log enter the command: New")
-    print("To use an existing catalog enter the command: Load")
-    print("To quit the program enter the command: Quit\n")
-    cmd = input("Enter Command:")
-    initial_menu(cmd)
+    print("Welcome to the GameTracker!\n")
+    initial_menu()
 
 
 
