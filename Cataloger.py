@@ -9,6 +9,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.automap import automap_base
 
 """
 Creates and connects to new database
@@ -54,8 +55,8 @@ def new_catalog():
         completed = Column(Boolean, nullable=False)
         # relationship (<Class related to>, secondary=<Table that forms relation between 2 other tables>,
         # back_populates=<complimentary collection in related class>)
-        platforms = relationship("Platform", secondary="Game_Platform_link", back_populates="games")
-        genres = relationship("Genre", secondary="Game_Genre_link", back_populates="games")
+        platform = relationship("Platform", secondary="Game_Platform_link", back_populates="games")
+        genre = relationship("Genre", secondary="Game_Genre_link", back_populates="games")
 
     class Platform(Base):
         __tablename__ = "platform"
@@ -64,7 +65,7 @@ def new_catalog():
         platform_name = Column(String, nullable=False)
         # relationship (<Class related to>, secondary=<Table that forms relation between 2 other tables>,
         # back_populates=<complimentary collection in related class>)
-        games = relationship("Game", secondary="Game_Platform_link", back_populates="platforms")
+        game = relationship("Game", secondary="Game_Platform_link", back_populates="platforms")
 
     class Genre(Base):
         __tablename__ = "genre"
@@ -73,7 +74,7 @@ def new_catalog():
         platform_name = Column(String, nullable=False)
         # relationship (<Class related to>, secondary=<Table that forms relation between 2 other tables>,
         # back_populates=<complimentary collection in related class>)
-        games = relationship("Game", secondary="Game_Genre_link", back_populates="genres")
+        game = relationship("Game", secondary="Game_Genre_link", back_populates="genres")
 
     class GamePlatform(Base):
         __tablename__ = "Game_Platform_link"
@@ -118,6 +119,15 @@ def load_catalog():
         # Must be better way than to return
         return False
 
+    engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
+
+    ### Using built in automated system to reflect tables from existing database###
+    Base = automap_base()
+    Base.prepare(engine, reflect = True)
+
+    Game = Base.classess.game
+    Platform = Base.clasees.platform
+    Genre = Base.classes.genre
 
 ### MENU SYSTEM ###
 
