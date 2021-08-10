@@ -15,6 +15,7 @@ from sqlalchemy.ext.automap import automap_base
 Creates and connects to new database
 """
 
+globalEngine = None
 
 def new_catalog():
     # Get path
@@ -92,7 +93,7 @@ def new_catalog():
     Base.metadata.create_all(engine)
 
     # with Session(engine) as session: Seesion?
-
+    globalEngine = engine
     return
 
 
@@ -128,6 +129,10 @@ def load_catalog():
     Game = Base.classess.game
     Platform = Base.clasees.platform
     Genre = Base.classes.genre
+    GamePlatform = Base.classes.Game_Platform_link # Unsure if should be table name or class name
+    GameGenre = Base.classes.Game_Genre_link
+
+    globalEngine = engine
 
 ### MENU SYSTEM ###
 
