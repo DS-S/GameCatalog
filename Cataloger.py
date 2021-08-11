@@ -12,36 +12,37 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.automap import automap_base
 
 """
-Creates and connects to new database
+Creates New Database
 """
-
-globalEngine = None
-
 def new_catalog():
     # Get path
     path = input("\nPlease enter the path to the directory where you would like the catalog to be stored\n"
                  "This includes the drive letter (e.g. C:\\Users\\<user>\\Documents):")
+
     # Checks path exists.
     if not os.path.exists(path):
         print("\nPath does not exist, please enter existing path.")  # Must be better way than to return, how ask again?
-        return False
+        return
+
     # Get file name
     file = input("\nPlease enter the catalog file name:")
+
+    #Check file name
     invalidChars = "\/:*?<>| "
     for char in file:
         if char in invalidChars:
             print("\nBad file name.")
-            return False
+            return
+
     filepath = path + "\\" + file
-    # Checks file doesn't already exists
+
+    # Check file doesn't already exists
     if os.path.isfile(filepath):
         print(
             "\nFile already exits in directory, please enter non-existing filename.")
-        # Must be better way than to return, how ask again?
-        return False
+        return
 
     ### Create Engine ###
-    # Create engine object that acts as central source of connections to the database
     engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
 
     #### Building Tables ####
@@ -64,8 +65,6 @@ def new_catalog():
 
         id = Column(Integer, primary_key=True, nullable=False)
         platform_name = Column(String, nullable=False)
-        # relationship (<Class related to>, secondary=<Table that forms relation between 2 other tables>,
-        # back_populates=<complimentary collection in related class>)
         game = relationship("Game", secondary="Game_Platform_link", back_populates="platforms")
 
     class Genre(Base):
@@ -73,8 +72,6 @@ def new_catalog():
 
         id = Column(Integer, primary_key=True, nullable=False)
         platform_name = Column(String, nullable=False)
-        # relationship (<Class related to>, secondary=<Table that forms relation between 2 other tables>,
-        # back_populates=<complimentary collection in related class>)
         game = relationship("Game", secondary="Game_Genre_link", back_populates="genres")
 
     class GamePlatform(Base):
@@ -89,36 +86,37 @@ def new_catalog():
         game_id = Column(Integer, ForeignKey("game.id"), primary_key=True)
         platform_id = Column(Integer, ForeignKey("genre.id"), primary_key=True)
 
-    #### Create all tables in the engine/database ####
+    #### Create all tables in the database ####
     Base.metadata.create_all(engine)
 
-    # with Session(engine) as session: Seesion?
-    globalEngine = engine
-    return
+    #Return engine to connect to database later.
+    return engine
 
 
 """
 Connects to existing database
 """
-
-
 def load_catalog():
     path = input("\nPlease enter the path to the directory where the catalog is stored:")
+
     if not os.path.exists(path):
-        print("\nPath does not exist, please enter existing path.")  # Must be better way than to return
-        return False
+        print("\nPath does not exist, please enter existing path.")
+        return
+
     file = input("\nPlease enter the catalog file name:")
+
     invalidChars = "\/:*?<>| "
     for char in file:
         if char in invalidChars:
             print("\nBad file name.")
-            return False
+            return
+
     filepath = path + "\\" + file
+
     if not os.path.isfile(filepath):
         print(
             "\nFile does not exits in directory, please enter existing file or use the command to create a new file.")
-        # Must be better way than to return
-        return False
+        return
 
     engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
 
@@ -126,13 +124,16 @@ def load_catalog():
     Base = automap_base()
     Base.prepare(engine, reflect = True)
 
+    #Refelct main tables
     Game = Base.classess.game
     Platform = Base.clasees.platform
     Genre = Base.classes.genre
+    #reflect Association tables
     GamePlatform = Base.classes.Game_Platform_link # Unsure if should be table name or class name
     GameGenre = Base.classes.Game_Genre_link
 
-    globalEngine = engine
+    return engine
+
 
 ### MENU SYSTEM ###
 
@@ -143,28 +144,30 @@ def initial_menu():
     cmd = input("Enter Command:")
     while cmd != "Quit":
         if cmd == "New":
-            if new_catalog() == False:
+            engine = new_catalog()
+            if engine is None:
                 print("\nTo start a new log enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
                 continue
-            # ToDo: display entire catalog
             else:
+                # ToDo: display entire catalog
                 sub_menu()
                 print("\nTo start a new log enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
         elif cmd == "Load":
-            if load_catalog() == False:
+            engine = load_catalog()
+            if engine is None:
                 print("\nTo start a new log enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
                 continue
-            # ToDo: display entire catalog
             else:
+                # ToDo: display entire catalog
                 sub_menu()
                 print("\nTo start a new log enter the command: New")
                 print("To use an existing catalog enter the command: Load")
