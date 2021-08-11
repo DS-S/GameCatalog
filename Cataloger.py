@@ -19,7 +19,7 @@ def new_catalog():
     path = input("\nPlease enter the path to the directory where you would like the catalog to be stored\n"
                  "This includes the drive letter (e.g. C:\\Users\\<user>\\Documents):")
 
-    # Checks path exists.
+    # Check path exists.
     if not os.path.exists(path):
         print("\nPath does not exist, please enter existing path.")  # Must be better way than to return, how ask again?
         return
