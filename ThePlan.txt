@@ -1,0 +1,8 @@
+The Plan for this Project:
+Program displays catalog of games as such:
+[Title] [Played/Unplayed] [Completed/Uncompleted][Platform(s)] [Generes].
+
+Program asks user if should make new catalog (make location of file) or use old one (asks where file is).
+By default displays all aplhabetically by title after creation or loading of catalog.
+Program take commands addGame, displayPlayed/Unplayed(alphabetically by title),displayByPlatform(Alphabetically by
+platforms then alphabetically by title), displayByGenre(alphabetically by genre).

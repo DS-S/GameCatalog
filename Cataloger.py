@@ -1,6 +1,6 @@
 """
 Main Program
-Author: Dennis Santos-Sanchez
+Author: DS-S
 """
 import os
 import sqlite3
@@ -19,7 +19,7 @@ def new_catalog():
     path = input("\nPlease enter the path to the directory where you would like the catalog to be stored\n"
                  "This includes the drive letter (e.g. C:\\Users\\<user>\\Documents):")
 
-    # Check path exists.
+    # Check path exists
     if not os.path.exists(path):
         print("\nPath does not exist, please enter existing path.")  # Must be better way than to return, how ask again?
         return
@@ -147,7 +147,7 @@ def initial_menu():
         if cmd == "New":
             engine = new_catalog()
             if engine is None:
-                print("\nTo start a new log enter the command: New")
+                print("\nTo start a new catalog enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
@@ -155,14 +155,14 @@ def initial_menu():
             else:
                 # ToDo: display entire catalog
                 sub_menu()
-                print("\nTo start a new log enter the command: New")
+                print("\nTo start a new catalog enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
         elif cmd == "Load":
             engine = load_catalog()
             if engine is None:
-                print("\nTo start a new log enter the command: New")
+                print("\nTo start a new catalog enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
@@ -170,12 +170,12 @@ def initial_menu():
             else:
                 # ToDo: display entire catalog
                 sub_menu()
-                print("\nTo start a new log enter the command: New")
+                print("\nTo start a new catalog enter the command: New")
                 print("To use an existing catalog enter the command: Load")
                 print("To quit the program enter the command: Quit\n")
                 cmd = input("Enter Command:")
         else:
-            print("\nTo start a new log enter the command: New")
+            print("\nTo start a new catalog enter the command: New")
             print("To use an existing catalog enter the command: Load")
             print("To quit the program enter the command: Quit\n")
             cmd = input("Enter Command:")
@@ -188,19 +188,28 @@ Menu accessed by user after having created or loaded a catalog
 def sub_menu():
     print("\nAll cataloged games have been displayed above.\nYou are now in the sub-menu.")
     print("\nTo search for a game by title enter the command: Search")
-    print("To display the catalog using filters enter the command: Filter")
+    print("To display the catalog sorted differently enter the command: Sort")
+    print("To add a new game enter the command: AddGame")
+    print("To remove a game enter the command: RemoveGame")
     print("Otherwise to return to the initial menu to create or load a different catalog enter the command: Exit")
     cmd = input("\nEnter Command:")
     while cmd != "Exit":
         if cmd == "Search":
-            # ToDo: create database search function
+            # ToDo: query database for specific title
             return
-        elif cmd == "Filter":
-            # ToDo: create database filter function
+        elif cmd == "Sort":
+            # ToDo: create function to query database
             return
+        elif cmd == "AddGame":
+            # ToDo: create function to add new game to database
+            return
+        elif cmd == "RemoveGame":
+            # ToDo: create function to remove game from database
         else:
             print("\nTo search for a game by title enter the command: Search")
-            print("To display the catalog using filters enter the command: Filter")
+            print("To display the catalog sorted differently enter the command: Sort")
+            print("To add a new game enter the command: AddGame")
+            print("To remove a game enter the command: RemoveGame")
             print("Otherwise to return to the initial menu to create or load a different catalog enter the command: "
                   "Exit")
             cmd = input("Enter Command:")
