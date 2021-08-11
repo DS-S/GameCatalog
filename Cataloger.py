@@ -6,9 +6,9 @@ import os
 import sqlite3
 
 import sqlalchemy
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, select
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship
 from sqlalchemy.ext.automap import automap_base
 
 """
@@ -153,7 +153,12 @@ def initial_menu():
                 cmd = input("Enter Command:")
                 continue
             else:
-                # ToDo: display entire catalog
+                with Session(engine) as session:
+                    stmt= select(Game.title, Game.played, Game.completed, Platform, Genre).where(
+                        Game.id == Platform.game).where(Game.id == Genre.game).order_by(Game.title)
+                    result = session.execute(stmt).all()
+                    for row in result:
+                        print(row)
                 sub_menu()
                 print("\nTo start a new catalog enter the command: New")
                 print("To use an existing catalog enter the command: Load")
@@ -205,6 +210,7 @@ def sub_menu():
             return
         elif cmd == "RemoveGame":
             # ToDo: create function to remove game from database
+            return
         else:
             print("\nTo search for a game by title enter the command: Search")
             print("To display the catalog sorted differently enter the command: Sort")
