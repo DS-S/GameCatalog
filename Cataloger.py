@@ -27,7 +27,7 @@ def new_catalog():
     # Get file name
     file = input("\nPlease enter the catalog file name:")
 
-    #Check file name
+    # Check file name
     invalidChars = "\/:*?<>| "
     for char in file:
         if char in invalidChars:
@@ -36,16 +36,16 @@ def new_catalog():
 
     filepath = path + "\\" + file
 
-    # Check file doesn't already exists
+    # Check file does not already exist
     if os.path.isfile(filepath):
         print(
             "\nFile already exits in directory, please enter non-existing filename.")
         return
 
-    ### Create Engine ###
+    # Create engine
     engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
 
-    #### Building Tables ####
+    # Build tables
     Base = declarative_base()
 
     class Game(Base):
@@ -86,10 +86,10 @@ def new_catalog():
         game_id = Column(Integer, ForeignKey("game.id"), primary_key=True)
         platform_id = Column(Integer, ForeignKey("genre.id"), primary_key=True)
 
-    #### Create all tables in the database ####
+    # Create all tables in the database
     Base.metadata.create_all(engine)
 
-    #Return engine to connect to database later.
+    # Return engine to connect to database later
     return engine
 
 
@@ -120,23 +120,24 @@ def load_catalog():
 
     engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
 
-    ### Using built in automated system to reflect tables from existing database###
+    # Use automap to copy tables from existing database
     Base = automap_base()
-    Base.prepare(engine, reflect = True)
+    Base.prepare(engine, reflect=True)
 
-    #Refelct main tables
+    # Copy main tables
     Game = Base.classess.game
     Platform = Base.clasees.platform
     Genre = Base.classes.genre
-    #reflect Association tables
-    GamePlatform = Base.classes.Game_Platform_link # Unsure if should be table name or class name
+    # Copy Association tables
+    GamePlatform = Base.classes.Game_Platform_link  # Unsure if should be table name or class name
     GameGenre = Base.classes.Game_Genre_link
 
     return engine
 
 
-### MENU SYSTEM ###
-
+"""
+Initial menu accessed by user
+"""
 def initial_menu():
     print("\nTo start a new log enter the command: New")
     print("To use an existing catalog enter the command: Load")
@@ -181,6 +182,9 @@ def initial_menu():
     return
 
 
+"""
+Menu accessed by user after having created or loaded a catalog
+"""
 def sub_menu():
     print("\nAll cataloged games have been displayed above.\nYou are now in the sub-menu.")
     print("\nTo search for a game by title enter the command: Search")
