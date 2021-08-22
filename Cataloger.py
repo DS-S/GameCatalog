@@ -62,6 +62,7 @@ def display_all(engine):
             print(f"Title: {row.title} || Played: {row.played} || Completed: {row.completed} || "
                   f"Platform: {row.platform_name} || Genre: {row.genre_name}")
     return
+
 def new_path():
     # Get path
     path = input("\nPlease enter the path to the directory where you would like the catalog to be stored\n"
@@ -69,7 +70,7 @@ def new_path():
     # Check path exists
     if not os.path.exists(path):
         print("\nPath does not exist, please enter existing path.")  # Must be better way than to return, how ask again?
-        return
+        return None
     # Get file name
     file = input("\nPlease enter the catalog file name:")
     # Check file name
@@ -77,13 +78,13 @@ def new_path():
     for char in file:
         if char in invalidChars:
             print("\nBad file name.")
-            return
+            return None
     filepath = path + "\\" + file
     # Check that file does not exist
     if os.path.isfile(filepath):
         print(
             "\nFile already exits in directory, please enter non-existing filename.")
-        return
+        return None
     return  filepath
 
 def load_path():
@@ -157,31 +158,71 @@ def add_game(engine):
             else:
                 print("Invalid input.\n Exiting to sub-menu.")
                 return
-        newGame = Game(title=title, played=played, completed=completed)
-        session.add(newGame)
+        new_game = Game(title=title, played=played, completed=completed)
+        session.add(new_game)
         #Check if platform exists
         p = session.execute(select(Platform).where(Platform.platform_name == platform)).first()
 
         if p is None:
             newPlat = Platform(platform_name=platform)
             session.add(newPlat)
-            newGame.platforms.append(newPlat)
+            new_game.platforms.append(newPlat)
         else:
-            newGame.platforms.append(p.Platform)
+            new_game.platforms.append(p.Platform)
 
         g = session.execute(select(Genre).where(Genre.genre_name == genre)).first()
 
         if g is None:
             newGenre = Genre(genre_name=genre)
             session.add(newGenre)
-            newGame.genres.append(newGenre)
+            new_game.genres.append(newGenre)
         else:
-            newGame.genres.append(g.Genre)
+            new_game.genres.append(g.Genre)
 
         #Commit changes to database
         session.commit()
         print("\nGame has been added.")
     return engine
+
+
+def remove_game(engine):
+    with Session(engine) as session:
+        title = input("Enter game title:")
+        played = input("Has this title been played(True/False):")
+        if played == "True":
+            played = True
+        elif played == "False":
+            played = False
+        else:
+            print("Invalid submission for played status, returning to sub-menu.")
+            return
+
+        completed = input("Has this title been completed(True/False):")
+        if completed == "True":
+            completed = True
+        elif completed == "False":
+            completed = False
+        else:
+            print("Invalid submission for completed status, returning to sub-menu.")
+            return
+
+        platform = input("Enter game platform:")
+        genre = input("Enter game genre:")
+
+        # check if full game entry exists
+        game = session.execute(select(Game, Platform, Genre).join(Game.platforms).join(Game.genres)
+                               .where(and_(Game.title == title, Game.played == played, Game.completed == completed))
+                               .where(
+            and_(Platform.platform_name == platform, Genre.genre_name == genre))).one_or_none()
+
+        if game is None:
+            print("\nEntry does not exist.")
+            return
+        print(f"Deleting:\nTitle {game.Game.title} || Played:{game.Game.played} || Completed:{game.Game.completed} || "
+              f"Platform:{game.Platform.platform_name} || Genre:{game.Genre.genre_name}")
+        session.delete(game.Game)
+        print("\nEntry deleted.")
+        session.commit()
 
 """
 Initial menu accessed by user
@@ -264,7 +305,6 @@ def sub_menu(engine):
                 "Otherwise to return to the initial menu to create or load a different catalog enter the command: Exit")
             cmd = input("\nEnter Command:")
         elif cmd == "AddGame":
-            # ToDo: create function to add new game to database
             add_game(engine)
             print("\nTo search for a game by title enter the command: Search")
             print("To display the catalog sorted differently enter the command: Sort")
@@ -275,7 +315,7 @@ def sub_menu(engine):
                 "Otherwise to return to the initial menu to create or load a different catalog enter the command: Exit")
             cmd = input("\nEnter Command:")
         elif cmd == "RemoveGame":
-            # ToDo: create function to remove game from database
+            remove_game(engine)
             print("\nTo search for a game by title enter the command: Search")
             print("To display the catalog sorted differently enter the command: Sort")
             print("To add a new game enter the command: AddGame")
@@ -295,6 +335,7 @@ def sub_menu(engine):
             print(
                 "Otherwise to return to the initial menu to create or load a different catalog enter the command: Exit")
             cmd = input("\nEnter Command:")
+        #ToDo: Add functions to remove/add a genre/platform
         else:
             print("\nTo search for a game by title enter the command: Search")
             print("To display the catalog sorted differently enter the command: Sort")
