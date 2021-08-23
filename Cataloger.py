@@ -55,8 +55,8 @@ def connect(filepath):
 
 def display_all(engine):
     with Session(engine) as session:
-        all_games = session.execute(select(Game.title, Game.played, Game.completed, Platform.platform_name, Genre.genre_name).join(
-            Game.platforms).join(Game.genres)).all()
+        all_games = session.execute(select(Game.title, Game.played, Game.completed, Platform.platform_name,
+                                           Genre.genre_name).join(Game.platforms).join(Game.genres)).all()
         print("")
         for row in all_games:
             print(f"Title: {row.title} || Played: {row.played} || Completed: {row.completed} || "
@@ -110,7 +110,6 @@ def load_path():
             "\nFile does not exits in directory, please enter existing file or use the command to create a new file.")
         return None
     return filepath
-
 
 def add_game(engine):
     with Session(engine) as session:
@@ -184,7 +183,6 @@ def add_game(engine):
         print("\nGame has been added.")
     return engine
 
-
 def remove_game(engine):
     with Session(engine) as session:
         title = input("Enter game title:")
@@ -223,6 +221,26 @@ def remove_game(engine):
         session.delete(game.Game)
         print("\nEntry deleted.")
         session.commit()
+
+def search_title(engine):
+    with Session(engine) as session:
+        title = input("\nEnter the title of the game you are searching for: ")
+
+        entry = session.execute(select(Game.title, Game.played, Game.completed, Platform.platform_name,
+                Genre.genre_name).join(Game.platforms).join(Game.genres).where(Game.title == title)).first()
+
+        if entry is None:
+            print("\nNo entries with that title.")
+            return
+
+        entries = session.execute(select(Game.title, Game.played, Game.completed, Platform.platform_name,
+                Genre.genre_name).join(Game.platforms).join(Game.genres).where(Game.title == title)).all()
+
+        print("")
+        for row in entries:
+            print(f"Title: {row.title} || Played: {row.played} || Completed: {row.completed} || "
+                  f"Platform: {row.platform_name} || Genre: {row.genre_name}")
+    return
 
 """
 Initial menu accessed by user
@@ -285,7 +303,7 @@ def sub_menu(engine):
     cmd = input("\nEnter Command:")
     while cmd != "Exit":
         if cmd == "Search":
-            # ToDo: query database for specific title
+            search_title(engine)
             print("\nTo search for a game by title enter the command: Search")
             print("To display the catalog sorted differently enter the command: Sort")
             print("To add a new game enter the command: AddGame")
@@ -295,7 +313,7 @@ def sub_menu(engine):
                 "Otherwise to return to the initial menu to create or load a different catalog enter the command: Exit")
             cmd = input("\nEnter Command:")
         elif cmd == "Sort":
-            # ToDo: create function to query database
+            # ToDo: create function to query database in manner besides alphabetically by title as done by display_all()
             print("\nTo search for a game by title enter the command: Search")
             print("To display the catalog sorted differently enter the command: Sort")
             print("To add a new game enter the command: AddGame")
