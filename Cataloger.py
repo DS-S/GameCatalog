@@ -416,6 +416,10 @@ def sub_menu(engine):
 
 
 def main():
+    """
+    Prints welcome message then starts program at initial menu.
+    :return:
+    """
     print("Welcome to the GameTracker!")
     initial_menu()
 
