@@ -40,7 +40,7 @@ def make():
     filepath = input("\nPlease enter the path to the directory where you would like the catalog to be stored\n"
                  "This includes the drive letter (e.g. C:\\Users\\<user>\\Documents):")
 
-    engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
+    engine = create_engine("sqlite+pysqlite:///" + filepath, echo=True, future=True)
 
     # Build tables
 
@@ -57,22 +57,24 @@ def main():
         n1 = Genre(genre_name="RPG")
         g1.platforms.append(p1)
         g1.genres.append(n1)
-        g2 = Game(title="DC", played=False, completed=True)
+        g2 = Game(title="DC", played=True, completed=True)
         session.add(g2)
         p2 = Platform(platform_name="Xbox")
         n2 = Genre(genre_name="Fighting")
         g2.platforms.append(p2)
         g2.genres.append(n2)
+        g1.platforms.append(p2)
         print(g1.title)
         print(g1.platforms[0].platform_name)
         print(g1.genres[0].genre_name)
-        result = session.execute(select(Game, Platform, Genre).where(and_(Game.id == Platform.id,Game.id ==
-                Genre.id)).order_by(Game.title)).all()
+        session.commit()
+        result = session.execute(select(Game.title, Game.played, Game.completed, Platform.platform_name, Genre.genre_name).join(
+            Game.platforms).join(Game.genres)).all()
         print("Result:")
         print(result)
         for row in result:
-            print("Row.Game.title:")
-            print(row.Game.title) # "DC" doesn't print if appending p1 and n1 instead of p2 and n2, why?
+            print(f"Title: {row.title} || Played: {row.played} || Completed: {row.completed} || "
+                  f"Platform: {row.platform_name} || Genre: {row.genre_name}")
     return
 
 
