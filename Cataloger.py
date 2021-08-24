@@ -45,7 +45,14 @@ class Genre(Base):
     genre_name = Column(String, nullable=False)
     games = relationship("Game", secondary=gglink, back_populates="genres")
 
+
 def connect(filepath):
+    """
+    Creates the engine, which is the source of all connections to the database, using the provided filepath. Then
+    creates/loads all metadata (e.g. Tables) in the database.
+    :param filepath: The filepath to the database file.
+    :return: The engine.
+    """
     # Create engine
     engine = create_engine("sqlite+pysqlite:///" + filepath, echo=False, future=True)
     # Create all tables in the database
@@ -53,7 +60,14 @@ def connect(filepath):
     # Return engine to connect to database later
     return engine
 
+
 def display_all(engine):
+    """
+    Prints out all entries in the database in an easy to read format, while sorting all entries alphabetically
+    descending by title.
+    :param engine: The source of connections to the database.
+    :return: The engine.
+    """
     with Session(engine) as session:
         all_games = session.execute(select(Game.title, Game.played, Game.completed, Platform.platform_name,
                                            Genre.genre_name).join(Game.platforms).join(Game.genres)).all()
@@ -63,8 +77,12 @@ def display_all(engine):
                   f"Platform: {row.platform_name} || Genre: {row.genre_name}")
     return
 
+
 def new_path():
-    # Get path
+    """
+    Takes input for a path and file name and then checks to make sure that a file does not exist at that location.
+    :return: The file name concatenated with the path to locate the file to connect to the database file.
+    """
     path = input("\nPlease enter the path to the directory where you would like the catalog to be stored\n"
                  "This includes the drive letter (e.g. C:\\Users\\<user>\\Documents):")
     # Check path exists
@@ -85,9 +103,14 @@ def new_path():
         print(
             "\nFile already exits in directory, please enter non-existing filename.")
         return None
-    return  filepath
+    return filepath
+
 
 def load_path():
+    """
+    Takes input for a path and file name and then checks to make sure that a file does exist at that location.
+    :return: The file name concatenated with the path to locate the file to connect to the database file.
+    """
     # Get path
     path = input("\nPlease enter the path to the directory where the catalog is stored:")
     # Check path exists
@@ -111,7 +134,13 @@ def load_path():
         return None
     return filepath
 
+
 def add_game(engine):
+    """
+    Adds a game to the database, as well as genre and platform entries if necessary.
+    :param engine: The source of connections to the database.
+    :return: The engine.
+    """
     with Session(engine) as session:
         title = input("Enter game title:")
         played = input("Has this title been played(True/False):")
@@ -135,7 +164,7 @@ def add_game(engine):
         platform = input("Enter game platform:")
         genre = input("Enter game genre:")
 
-        # check if full game entry exists
+        # Check if full game entry exists
         game = session.execute(select(Game,Platform,Genre).join(Game.platforms).join(Game.genres)
                                .where(and_(Game.title == title,Game.played == played, Game.completed == completed))
                                .where(and_(Platform.platform_name == platform,Genre.genre_name == genre))).one_or_none()
@@ -144,7 +173,7 @@ def add_game(engine):
             print("\nFull entry already exists.")
             return
 
-        #Check if game with title exists
+        # Check if game with title exists
         t = session.execute(select(Game).where(Game.title == title)).first()
 
         if t is not None:
@@ -159,7 +188,8 @@ def add_game(engine):
                 return
         new_game = Game(title=title, played=played, completed=completed)
         session.add(new_game)
-        #Check if platform exists
+
+        # Check if platform exists
         p = session.execute(select(Platform).where(Platform.platform_name == platform)).first()
 
         if p is None:
@@ -178,12 +208,18 @@ def add_game(engine):
         else:
             new_game.genres.append(g.Genre)
 
-        #Commit changes to database
+        # Commit changes to database
         session.commit()
         print("\nGame has been added.")
     return engine
 
+
 def remove_game(engine):
+    """
+    Removes a game from the database, but does not removes the genre or platform.
+    :param engine: The source of connections to the database.
+    :return: The engine.
+    """
     with Session(engine) as session:
         title = input("Enter game title:")
         played = input("Has this title been played(True/False):")
@@ -222,7 +258,14 @@ def remove_game(engine):
         print("\nEntry deleted.")
         session.commit()
 
+
 def search_title(engine):
+    """
+    Take input for a title. Then searches if any entries with the given title exist. Should entries with the given title
+    exist all of them will be printed out in a easy to read format.
+    :param engine: The source of connections to the database.
+    :return: Nothing.
+    """
     with Session(engine) as session:
         title = input("\nEnter the title of the game you are searching for: ")
 
@@ -242,10 +285,12 @@ def search_title(engine):
                   f"Platform: {row.platform_name} || Genre: {row.genre_name}")
     return
 
-"""
-Initial menu accessed by user
-"""
+
 def initial_menu():
+    """
+    Initial menu accessed by user allowing them to create a new game tracking log, load an old log, or quit the program.
+    :return: Nothing.
+    """
     print("\nTo start a new log enter the command: New")
     print("To use an existing catalog enter the command: Load")
     print("To quit the program enter the command: Quit\n")
@@ -289,10 +334,14 @@ def initial_menu():
     return
 
 
-"""
-Menu accessed by user after having created or loaded a catalog
-"""
 def sub_menu(engine):
+    """
+    Sub-menu accessed by user allowing them to search for a game by title, display stored games sorted in different
+    manners, add a game to the catalog, remove a game from the catalog, display all games in the database (sorted
+    alphabetically).
+    :param engine: The source of connections ot the database.
+    :return: Nothing
+    """
     print("\nAll cataloged games have been displayed above.\nYou are now in the sub-menu.")
     print("\nTo search for a game by title enter the command: Search")
     print("To display the catalog sorted differently enter the command: Sort")
