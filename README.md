@@ -1,7 +1,7 @@
 # GameCatalog
 
 ## Program Description
-This program is a gametracker, that is it keep's track of games, specifically the game's title, if it's been played, if it's been completed, what platform the user owns it on, and what is the main genre of the game.
+This program is a game tracker, that is it keep's track of games, specifically the game's title, if it's been played, if it's been completed, what platform the user owns it on, and what is the main genre of the game.
 
 ## Local Development
 1. Create a virtual environment.
